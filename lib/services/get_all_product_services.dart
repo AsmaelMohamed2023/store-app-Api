@@ -11,7 +11,9 @@ class GetAllProductServices {
     // Create a list of ProductModel objects from the data.
     List<ProductModel> productsList = [];
     for (int i = 0; i < data.length; i++) {
-      productsList.add(ProductModel.fromJson(data[i]));
+      productsList.add(
+        ProductModel.fromJson(data[i]),
+      );
     }
 
     // Return the list of ProductModel objects.

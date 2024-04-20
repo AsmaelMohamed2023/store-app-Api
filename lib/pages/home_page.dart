@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:store_app/model/product_model.dart';
+import 'package:store_app/services/get_all_product_services.dart';
+import 'package:store_app/widget/custom_card.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -8,7 +11,12 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('New Trend'),
+        title: const Text(
+          'New Trend',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         centerTitle: true,
         actions: [
           IconButton(
@@ -17,70 +25,34 @@ class HomePage extends StatelessWidget {
           )
         ],
       ),
-      body: Center(
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Container(
-              height: 130,
-              width: 220,
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
-                    spreadRadius: 20,
-                    blurRadius: 50,
-                    offset: const Offset(1, 1),
+      body: Padding(
+          padding: const EdgeInsets.only(left: 16, right: 16, top: 65),
+          child: FutureBuilder<List<ProductModel>>(
+            future: GetAllProductServices().getAllProducts(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                List<ProductModel> product = snapshot.data!;
+
+                return GridView.builder(
+                  itemCount: product.length,
+                  clipBehavior: Clip.none,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 100,
+                    crossAxisSpacing: 10,
+                    childAspectRatio: 1.4,
                   ),
-                ],
-              ),
-              child: const Card(
-                elevation: 10,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'HandBag L2',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            r'$ 200',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          Icon(
-                            Icons.favorite,
-                            color: Colors.red,
-                          ),
-                        ],
-                      )
-                    ],
+                  itemBuilder: (context, index) => CustomCard(
+                    product: product[index],
                   ),
-                ),
-              ),
-            ),
-            Positioned(
-              right: 32,
-              top: -50,
-              child: Image.network(
-                'https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg',
-                height: 100,
-              ),
-            ),
-          ],
-        ),
-      ),
+                );
+              } else {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            },
+          )),
     );
   }
 }
